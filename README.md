@@ -18,6 +18,7 @@
   - IRremoteESP8266
   - Arduino IDEのボードマネージャでM5Stackのバージョンを**2.1.0**に設定
 - VOICEVOX Ver. 0.24.2
+- Audacity 3.7.4
 - マイコン
   - [M5StickC Plus2](https://docs.m5stack.com/ja/core/M5StickC%20PLUS2)
 - IRセンサー
@@ -57,8 +58,9 @@ IRrecvDemo.inoでリモコンボタンコードを調べたところ
 | ランプ | パネルが光る   |
 | 強 | 強そうな発言をする |
 
-## 音声データ
-
-VOICEVOXでボタンごとの音声を作成した
+## 音声データ作成方法
+- VOICEVOXでボタンごとの音声を作成した
 ![音声作成](.\image\音声作成.png)
-
+- 無料の音声編集ソフト「[Audacity](https://forest.watch.impress.co.jp/library/software/audacity/)」を使って、WAVファイルをM5StickC Plus2の内蔵ブザー再生に適した形式（サンプリングレート: 8000Hz, チャンネル: モノラル, フォーマット: 8-bit Unsigned PCM）に変換
+  - メニューの[トラック]-[再サンプリング]で8000Hzを選択
+  - メニューの[ファイル]-[オーディオをエクスポート]でdataフォルダ以下に保存
