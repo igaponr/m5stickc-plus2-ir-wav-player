@@ -66,6 +66,6 @@ IRrecvDemo.inoでリモコンボタンコードを調べたところ
   - サンプリングレート: 8000 Hz （または16000Hz。8000Hzの方が成功しやすいです）
   - チャンネル: モノラル
   - フォーマット: 8-bit Unsigned PCM （または16-bit PCM）
-- 無料の音声編集ソフト「[Audacity](https://forest.watch.impress.co.jp/library/software/audacity/)」を使って、WAVファイルをM5StickC Plus2の内蔵ブザー再生に適した形式（サンプリングレート: 8000Hz, チャンネル: モノラル, フォーマット: 8-bit Unsigned PCM）に変換
+- 無料の音声編集ソフト「[Audacity](https://forest.watch.impress.co.jp/library/software/audacity/)」を使って、WAVファイルをM5StickC Plus2の内蔵ブザー再生に適した形式に変換
   - メニューの[トラック]-[再サンプリング]で8000Hzを選択
   - メニューの[ファイル]-[オーディオをエクスポート]でdataフォルダ以下に保存
