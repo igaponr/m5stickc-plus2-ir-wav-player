@@ -72,7 +72,7 @@ IRrecvDemo.inoでリモコンボタンコードを調べたところ
   - メニューの[ファイル]-[オーディオをエクスポート]でdataフォルダ以下に保存
 
 ## 音声データのアップロード方法
-- 別途ArduinoIDE 1.8.19を構築する
+- ArduinoIDE 1.8.19を使用する
 - [arduino-esp32fs-pluginプラグイン](https://github.com/me-no-dev/arduino-esp32fs-plugin)をセットアップする
 - スケッチがあるフォルダ内の「data」フォルダにアップロードするファイルを保存する
 - メニュー[ツール]-[ESP32 Sketch Data Upload]を選ぶ
