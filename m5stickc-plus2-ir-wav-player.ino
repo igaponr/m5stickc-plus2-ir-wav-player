@@ -1,4 +1,5 @@
-#include <M5StickCPlus2.h>
+#include <Arduino.h>
+#include <M5Unified.h>
 #include <IRremoteESP8266.h>
 #include <IRrecv.h>
 #include <IRutils.h>
