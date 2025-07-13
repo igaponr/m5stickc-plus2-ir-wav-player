@@ -69,3 +69,11 @@ IRrecvDemo.inoでリモコンボタンコードを調べたところ
 - 無料の音声編集ソフト「[Audacity](https://forest.watch.impress.co.jp/library/software/audacity/)」を使って、WAVファイルをM5StickC Plus2の内蔵ブザー再生に適した形式に変換
   - メニューの[トラック]-[再サンプリング]で8000Hzを選択
   - メニューの[ファイル]-[オーディオをエクスポート]でdataフォルダ以下に保存
+
+## 音声データのアップロード方法
+- 別途ArduinoIDE 1.8.19を構築する
+- [arduino-esp32fs-pluginプラグイン](https://github.com/me-no-dev/arduino-esp32fs-plugin)をセットアップする
+- スケッチがあるフォルダ内の「data」フォルダにアップロードするファイルを保存する
+- メニュー[ツール]-[ESP32 Sketch Data Upload]を選ぶ
+- ダイアログが表示されたら、SPIFFSを選びOKをクリックする
+  - 参考記事[SPIFFS/LittleFS Filesystem へアップロードする方法](https://www.farmsoft.jp/2065/)
