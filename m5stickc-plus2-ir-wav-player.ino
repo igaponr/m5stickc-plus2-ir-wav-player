@@ -8,16 +8,18 @@
 // 音声再生ライブラリ
 #include "AudioFileSourceSPIFFS.h"
 #include "AudioGeneratorWAV.h"
+// AudioToolsライブラリのメインヘッダーをインクルードする
+#include <AudioTools.h> // この行を追加または修正
 // I2S出力の代わりにPWM出力のヘッダーをインクルードする
-#include "AudioOutputPWM.h"
+// #include "AudioOutputPWM.h" // もし上の行でAudioTools.hをインクルードした場合、この行は不要かもしれません
 
 // IRセンサーの入力ピン
-const uint16_t kRecvPin = 36;
+const uint16_t kRecvPin = 33;
 IRrecv irrecv(kRecvPin);
 decode_results results;
 
 // 音声出力オブジェクトをPWM用に変更
-AudioOutputPWM *out = nullptr;
+AudioOutputPWM *out = nullptr; // この型が認識されるようになるはずです
 AudioGeneratorWAV *wav = nullptr;
 AudioFileSourceSPIFFS *file = nullptr;
 
@@ -92,14 +94,12 @@ void setup() {
   }
   Serial.println("SPIFFS Mount Successful");
 
-
   // I2Sの代わりにPWM出力を初期化する
   // M5StickC Plus2の内蔵ブザーはGPIO 2に接続されている
   out = new AudioOutputPWM(2);
   // 音量が小さい場合はゲインを上げてみる（最大4.0程度まで）
   out->SetGain(1.0); // デフォルトは1.0
   out->SetOutputModeMono(true); // モノラル出力に設定
-
 
   // IR受信の開始
   irrecv.enableIRIn();
@@ -132,7 +132,6 @@ void loop() {
     M5.Lcd.println("Zundamon Remote");
     M5.Lcd.setCursor(0, 50);
     M5.Lcd.printf("IR: 0x%08X", results.value);
-
 
     // 受信したIRコードに対応するWAVファイルを再生
     switch(results.value) {

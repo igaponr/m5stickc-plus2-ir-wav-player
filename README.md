@@ -18,6 +18,7 @@
 - ライブラリ
   - IRremoteESP8266
   - Arduino IDEのボードマネージャでM5Stackのバージョンを**2.1.0**に設定
+  - [arduino-audio-tools](https://github.com/pschatzmann/arduino-audio-tools)はzipをダウンロードして、メニュー[スケッチ]-[ライブラリをインクルード]-[.zip形式のライブラリをインストール]する
 - VOICEVOX Ver. 0.24.2
 - Audacity 3.7.4
 - マイコン
