@@ -79,3 +79,60 @@ IRrecvDemo.inoでリモコンボタンコードを調べたところ
 - メニュー[ツール]-[ESP32 Sketch Data Upload]を選ぶ
 - ダイアログが表示されたら、SPIFFSを選びOKをクリックする
   - 参考記事[SPIFFS/LittleFS Filesystem へアップロードする方法](https://www.farmsoft.jp/2065/)
+
+## Arduino IDE 1.8.19 (ポータブル版) のインストール手順
+
+### ステップ1: Arduino IDE 1.8.19 のZIPファイルをダウンロードする
+1.  Arduinoの公式サイトのソフトウェアダウンロードページにアクセスします。
+    [https://www.arduino.cc/en/software](https://www.arduino.cc/en/software)
+2.  ページを下にスクロールし、「Legacy releases」または「Previous Releases」のセクションを探します。
+3.  「Arduino IDE 1.8.19」の項目を見つけ、その中から「**Windows ZIP file**」をクリックしてダウンロードします。
+    > **注意:** インストーラー版（`.exe`）ではありません。
+
+### ステップ2: 専用のフォルダを作成し、ZIPファイルを展開する
+1.  PC内の分かりやすい場所（例: Cドライブ直下やドキュメントフォルダなど）に、Arduino IDE 1.8.19専用の新しいフォルダを作成します。フォルダ名は `Arduino-1.8.19` などが分かりやすいでしょう。
+    *   例: `C:\Arduino-1.8.19`
+2.  ダウンロードしたZIPファイル（`arduino-1.8.19-windows.zip`）の中身を、すべて先ほど作成したフォルダの中に展開（解凍）します。
+
+### ステップ3: ポータブルモードを有効にする（強く推奨）
+この設定を行うと、ライブラリやボード定義などの設定がすべてこのフォルダ内に保存されるようになり、既存の2.0系の環境と完全に分離できます。
+
+1.  先ほどファイルを展開したフォルダ（例: `C:\Arduino-1.8.19`）の中に、手動で新しいフォルダを作成します。
+2.  そのフォルダの名前を `portable` にします。
+3.  これだけで、このArduino IDEは「ポータブルモード」で動作するようになります。
+
+### ステップ4: Arduino IDE 1.8.19 を起動する
+1.  展開したフォルダの中にある `arduino.exe` をダブルクリックして起動します。
+
+これで、既存の2.0系とは独立した、まっさらなArduino IDE 1.8.19が起動します。
+
+***
+
+## 1.8.19 環境でのM5StickC Plus2開発環境セットアップ
+新しくインストールした1.8.19には、まだM5StickC Plus2を扱うための設定が入っていません。以下の手順でセットアップが必要です。
+
+### 1. ボード定義の追加
+1.  起動したArduino IDE 1.8.19の **「ファイル」** > **「環境設定」** を開きます。
+2.  「追加のボードマネージャのURL」に、以下のURLを貼り付けます。
+    ```
+    https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/arduino/package_m5stack_index.json
+    ```
+3.  **「ツール」** > **「ボード」** > **「ボードマネージャ」** を開き、「`M5Stack`」で検索してインストールします。
+
+### 2. ライブラリのインストール
+**「ツール」** > **「ライブラリを管理」** から、以下のライブラリを検索してインストールします。
+*   `M5StickCPlus2`
+*   `IRremoteESP8266`
+*   `ESP8266Audio`
+
+### 3. 「ESP32 Sketch Data Upload」ツールの導入
+1.  GitHubからツールのZIPファイルをダウンロードします。
+    *   [arduino-esp32fs-plugin Releases](https://github.com/me-no-dev/arduino-esp32fs-plugin/releases/)
+2.  Arduino IDE 1.8.19のスケッチブックの場所を確認します。（**「ファイル」** > **「環境設定」** で確認できます。ポータブルモードなら `C:\Arduino-1.8.19\portable\sketchbook` のような場所です）
+3.  そのスケッチブックのフォルダ内に、手動で `tools` フォルダを作成します。
+4.  ダウンロードしたツールのZIPファイルを解凍し、中にある `ESP32FS` フォルダを、今作成した `tools` フォルダの中に丸ごとコピーします。
+    *   最終的なパス: `...\sketchbook\tools\ESP32FS\tool\esp32fs.jar`
+5.  Arduino IDE 1.8.19を再起動します。
+6.  再起動後、「ツール」メニューを開き、ボードを「`M5STICK-C-Plus2`」に設定すれば、「**ESP32 Sketch Data Upload**」が表示されるはずです。
+
+これで、Arduino IDE 2.0系と1.8.19がPCに共存し、1.8.19側でデータアップロードツールを使える環境が整いました。
