@@ -5,7 +5,7 @@
 #include <SPIFFS.h>
 #include <AudioFileSourceSPIFFS.h>
 #include <AudioGeneratorWAV.h>
-#include <AudioOutput.h> // ESP8266Audioの基底クラス
+#include <AudioOutput.h>
 
 class BeepPlayer {
 public:
@@ -18,7 +18,7 @@ public:
 private:
     AudioGeneratorWAV* _wav;
     AudioFileSourceSPIFFS* _file;
-    AudioOutput* _out; 
+    AudioOutput* _out;
 };
 
 #endif

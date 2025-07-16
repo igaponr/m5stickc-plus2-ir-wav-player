@@ -44,7 +44,7 @@ void setup() {
     }
 
     audioOutput->SetPinout(BCLK_PIN, LRCK_PIN, SADTA_PIN);
-    audioOutput->SetGain(0.2); // 必要に応じてゲインを調整
+    audioOutput->SetGain(0.4); // 必要に応じてゲインを調整
     audioOutput->SetOutputModeMono(true);
 
     beepPlayer = new BeepPlayer(audioOutput);
