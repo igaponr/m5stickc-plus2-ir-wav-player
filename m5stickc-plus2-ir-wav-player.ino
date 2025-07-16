@@ -8,6 +8,11 @@
 #include "BeepPlayer.h"
 #include "RemoteControlHandler.h"
 
+#define BCLK_PIN 12
+#define LRCK_PIN 0
+#define SADTA_PIN 2
+#define EXTERNAL_I2S 0
+
 // IRセンサーの入力ピン
 const uint16_t kRecvPin = 33;
 
@@ -31,16 +36,16 @@ void setup() {
     }
     Serial.println("SPIFFS Mount Successful");
 
-    audioOutput = new AudioOutputI2S();
+    audioOutput = new AudioOutputI2S(I2S_NUM_0, EXTERNAL_I2S);
     if (!audioOutput) {
          Serial.println("Failed to allocate AudioOutputI2S!");
          M5.Lcd.println("Audio Init Failed!");
          while(1);
     }
 
-    // SetPinout(BCLK, LRC/WS, DOUT)
-    audioOutput->SetPinout(12, 0, 2);
-    audioOutput->SetGain(1.0); // 必要に応じてゲインを調整
+    audioOutput->SetPinout(BCLK_PIN, LRCK_PIN, SADTA_PIN);
+    audioOutput->SetGain(0.2); // 必要に応じてゲインを調整
+    audioOutput->SetOutputModeMono(true);
 
     beepPlayer = new BeepPlayer(audioOutput);
     if (!beepPlayer) {
