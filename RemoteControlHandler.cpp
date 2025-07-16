@@ -44,7 +44,7 @@ void RemoteControlHandler::loop() {
 
             if (_player && fileToPlay) {
                 // 対応するファイルが見つかったらBeepPlayerに再生を依頼
-                _player->playWavFile(fileToPlay);
+                _player->playAudioFile(fileToPlay);
             } else {
                 // 未知のコードの場合
                 Serial.printf("Unknown IR code: 0x%08X\n", _results.value);
