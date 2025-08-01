@@ -46,7 +46,7 @@ private:
     // サポートするIRコードと対応するファイル名の配列
     // constを付けて変更されないようにする
     const IrCodeMapping _codeMappings[6] = { // Assuming 6 buttons
-        {0x415f01fe, "/415f01fe.wav"}, // 切
+        {0x415f01fe, "/415f01fe.mp3"}, // 切
         {0x415f817e, "/415f817e.wav"}, // 弱
         {0x415fa15e, "/415fa15e.wav"}, // タイマー
         {0x415f41be, "/415f41be.wav"}, // 中
