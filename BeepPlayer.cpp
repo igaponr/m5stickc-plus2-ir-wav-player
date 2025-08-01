@@ -54,13 +54,11 @@ void BeepPlayer::playAudioFile(const char* filename) {
         _currentType = WAV;
         _generator = new AudioGeneratorWAV();
         _generator->begin(_file, _out);
-
     } else if (strcasecmp(dot, ".mp3") == 0) {
         _currentType = MP3;
         _id3 = new AudioFileSourceID3(_file); // MP3はID3を挟む
         _generator = new AudioGeneratorMP3();
         _generator->begin(_id3, _out);
-
     } else {
         Serial.printf("Error: Unsupported file type: %s\n", dot);
         cleanup();
