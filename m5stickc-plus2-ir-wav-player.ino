@@ -14,7 +14,8 @@
 #define EXTERNAL_I2S 0
 
 // IRセンサーの入力ピン
-const uint16_t kRecvPin = 33;
+const uint16_t kRecvPin = 33;  // M5StickC Plus2
+// const uint16_t kRecvPin = 36;  // M5GO
 
 // グローバルオブジェクト
 AudioOutputI2S* audioOutput = nullptr; 
