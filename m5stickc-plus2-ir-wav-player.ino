@@ -1,66 +1,76 @@
+// 変更箇所はloop関数のみ
+#include <Arduino.h>
 #include <M5Unified.h>
-#include "FS.h"
-#include "SPIFFS.h"
-#include "AudioFileSourceSPIFFS.h"
-#include "AudioGeneratorWAV.h"
-#include "AudioOutput.h" // ★★★ これがM5StickC Plus2用の正しいライブラリです ★★★
-#include <M5Unified.h>
+#include <SPIFFS.h>
+#include <AudioFileSourceSPIFFS.h>
+#include <AudioGeneratorWAV.h>
+#include <AudioGeneratorMP3.h> // MP3再生のために追加
+#include <AudioOutputI2S.h>
 
-// --- 再生設定 ---
-#define FILENAME "/415f01fe.wav"    // 再生するファイル名
+// クラスヘッダーをインクルード
+#include "BeepPlayer.h"
+#include "RemoteControlHandler.h"
 
-// --- オブジェクトの宣言 ---
-AudioFileSourceSPIFFS *file = nullptr;
-AudioGeneratorWAV *wav = nullptr;
-AudioOutput *out = nullptr; // ★★★ I2SではなくPWM用のオブジェクトに変更 ★★★
+// IRセンサーの入力ピン
+const uint16_t kRecvPin = 36;  // M5GO
+
+// グローバルオブジェクト
+AudioOutputI2S* audioOutput = nullptr;
+AudioGeneratorWAV* wav = nullptr;
+AudioGeneratorMP3* mp3 = nullptr; // MP3再生用にグローバルで宣言
+BeepPlayer* beepPlayer = nullptr;
+RemoteControlHandler* remoteHandler = nullptr;
 
 void setup() {
     auto cfg = M5.config();
     M5.begin(cfg);
+
+    M5.Lcd.setRotation(1);
     M5.Lcd.setTextSize(2);
-    M5.Lcd.println("WAV Playback Test");
-    M5.Lcd.println("for M5StickC Plus2");
+    M5.Lcd.fillScreen(BLACK);
+    M5.Lcd.println("Zundamon Remote");
+    Serial.begin(115200);
 
-    // 1. SPIFFSの初期化
-    if (!SPIFFS.begin(true)) {
-        M5.Lcd.println("SPIFFS Mount Failed!");
-        while (1);
+    if(!SPIFFS.begin(true)){
+        Serial.println("SPIFFS Mount Failed");
+        M5.Lcd.println("SPIFFS Failed!");
+        while(1);
     }
-    M5.Lcd.println("SPIFFS OK");
+    Serial.println("SPIFFS Mount Successful");
 
-    // 2. テスト用WAVファイルの存在確認
-    File testFile = SPIFFS.open(FILENAME, "r");
-    if (!testFile) {
-        M5.Lcd.printf("File %s not found!\n", FILENAME);
-        while (1);
-    }
-    M5.Lcd.printf("File %s found.\n", FILENAME);
-    testFile.close();
+    M5.Speaker.begin();
+    auto spk_cfg = M5.Speaker.config();
+    audioOutput = new AudioOutputI2S(spk_cfg.i2s_port, AudioOutputI2S::INTERNAL_DAC);
+    audioOutput->SetPinout(spk_cfg.pin_bck, spk_cfg.pin_ws, spk_cfg.pin_data_out);
+    audioOutput->SetGain(0.4);
+    audioOutput->SetOutputModeMono(true);
 
-    out = new AudioOutput();
-    if (out == nullptr) {
-        Serial.println("AudioOutputの初期化に失敗しました");
-        return;
+    // 修正: 正しく設定された audioOutput オブジェクトを BeepPlayer のコンストラクタに渡します。
+    beepPlayer = new BeepPlayer(audioOutput);
+    if (!beepPlayer) {
+         Serial.println("Failed to allocate BeepPlayer!");
+         M5.Lcd.println("BeepPlayer Init Failed!");
+         while(1);
     }
-    out->begin(); // これでM5StickC Plus2のスピーカー出力が準備されます
 
-    // 4. 再生開始
-    file = new AudioFileSourceSPIFFS(FILENAME);
-    wav = new AudioGeneratorWAV();
-    
-    // begin()は成功するはずです
-    if (wav->begin(file, out)) {
-        M5.Lcd.println("Playback started!");
-    } else {
-        M5.Lcd.println("Playback failed to start.");
+    remoteHandler = new RemoteControlHandler(kRecvPin, beepPlayer);
+    if (!remoteHandler) {
+         Serial.println("Failed to allocate RemoteControlHandler!");
+         M5.Lcd.println("RemoteHandler Init Failed!");
+         while(1);
     }
+
+    Serial.println("Setup complete. Ready to receive IR signals.");
 }
 
 void loop() {
-    if (wav && wav->isRunning()) {
-        if (!wav->loop()) {
-            wav->stop();
-            M5.Lcd.println("Playback finished.");
-        }
+    if (remoteHandler) {
+        remoteHandler->loop();
     }
+    // ★★★ 修正点 ★★★
+    // BeepPlayerのloopは再生処理に必要なので元に戻します
+    if (beepPlayer) {
+        beepPlayer->loop();
+    }
+    delay(10);
 }

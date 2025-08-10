@@ -2,37 +2,35 @@
 #define BEEP_PLAYER_H
 
 #include <Arduino.h>
+// ★★★ 修正点 ★★★
+// AudioFileSourceSPIFFS.h が依存しているため、先に SPIFFS.h をインクルードする
 #include <SPIFFS.h>
-#include <AudioFileSourceSPIFFS.h>
-#include <AudioFileSourceID3.h>   // MP3用にインクルード追加
+#include <AudioOutputI2S.h>
 #include <AudioGeneratorWAV.h>
-#include <AudioGeneratorMP3.h>   // MP3用にインクルード追加
-#include <AudioOutput.h>
+#include <AudioGeneratorMP3.h>
+#include <AudioFileSourceSPIFFS.h> // このファイルの処理より前にSPIFFSが定義されている必要がある
 
 class BeepPlayer {
 public:
-    BeepPlayer(AudioOutput* audioOut);
+    // コンストラクタでAudioOutputI2Sのポインタを受け取る
+    BeepPlayer(AudioOutputI2S* audioOutput);
     ~BeepPlayer();
 
+    // 再生処理のためにloop関数を復活
     void loop();
-    // メソッド名をより汎用的に変更
+
     void playAudioFile(const char* filename);
     bool isPlaying();
-    void stop(); // 明示的に停止するメソッドを追加
+    void stop();
 
 private:
-    // 【変更点】ジェネレータを親クラスのポインタで保持
-    AudioGenerator* _generator;
+    AudioOutputI2S* _out;
+    AudioGeneratorWAV* _wav;
+    AudioGeneratorMP3* _mp3;
     AudioFileSourceSPIFFS* _file;
-    // 【追加】MP3再生で必要になるID3ソース
-    AudioFileSourceID3* _id3;
-    AudioOutput* _out;
 
-    // 現在のファイルタイプを保持する変数 (WAV or MP3)
-    enum FileType { NONE, WAV, MP3 };
-    FileType _currentType;
-
-    void cleanup(); // リソース解放をまとめるヘルパー関数
+    // 現在再生中のジェネレータを追跡するためのポインタ
+    AudioGenerator* _currentGenerator;
 };
 
 #endif

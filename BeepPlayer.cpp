@@ -1,89 +1,72 @@
 #include "BeepPlayer.h"
-#include <M5Unified.h>
+#include <SPIFFS.h>
 
-BeepPlayer::BeepPlayer(AudioOutput* audioOut)
-    : _out(audioOut), _generator(nullptr), _file(nullptr), _id3(nullptr), _currentType(NONE) {
+// ★★★ 全体的に修正 ★★★
+
+BeepPlayer::BeepPlayer(AudioOutputI2S* audioOutput)
+    : _out(audioOutput), _wav(nullptr), _mp3(nullptr), _file(nullptr), _currentGenerator(nullptr) {
+    // コンストラクタで受け取ったポインタをメンバ変数に保存
 }
 
 BeepPlayer::~BeepPlayer() {
-    cleanup();
-}
-
-void BeepPlayer::cleanup() {
-    if (_generator && _generator->isRunning()) {
-        _generator->stop();
-    }
-    delete _generator;
-    _generator = nullptr;
-
-    delete _id3;
-    _id3 = nullptr;
-
-    delete _file;
-    _file = nullptr;
-
-    _currentType = NONE;
-}
-
-void BeepPlayer::stop() {
-    cleanup();
+    stop(); // デストラクタで再生を停止し、リソースを解放
 }
 
 void BeepPlayer::playAudioFile(const char* filename) {
-    // まずは現在の再生を停止し、リソースを解放
-    cleanup();
-
-    // ファイル拡張子を取得して判定 (簡易的な方法)
-    const char* dot = strrchr(filename, '.');
-    if (!dot) {
-        Serial.println("Error: No file extension found.");
-        return;
-    }
-
-    _file = new AudioFileSourceSPIFFS(filename);
-    if (!_file || !_file->isOpen()) {
-        Serial.printf("Error: Failed to open file %s\n", filename);
-        cleanup();
-        return;
+    if (isPlaying()) {
+        stop();
     }
 
     Serial.printf("Playing %s\n", filename);
 
-    // 拡張子に応じてジェネレータを生成
-    if (strcasecmp(dot, ".wav") == 0) {
-        _currentType = WAV;
-        _generator = new AudioGeneratorWAV();
-        _generator->begin(_file, _out);
-
-    } else if (strcasecmp(dot, ".mp3") == 0) {
-        _currentType = MP3;
-        _id3 = new AudioFileSourceID3(_file); // MP3はID3を挟む
-        _generator = new AudioGeneratorMP3();
-        _generator->begin(_id3, _out);
-
-    } else {
-        Serial.printf("Error: Unsupported file type: %s\n", dot);
-        cleanup();
+    _file = new AudioFileSourceSPIFFS(filename);
+    if (!_file || !_file->isOpen()) {
+        Serial.printf("Failed to open file: %s\n", filename);
+        delete _file;
+        _file = nullptr;
         return;
     }
 
-    if (!_generator->isRunning()) {
-        Serial.println("Error: Failed to start playback.");
-        cleanup();
+    // ファイルの拡張子に応じて適切なジェネレータを選択
+    if (strstr(filename, ".wav") != nullptr) {
+        _wav = new AudioGeneratorWAV();
+        _currentGenerator = _wav;
+        _wav->begin(_file, _out);
+    } else if (strstr(filename, ".mp3") != nullptr) {
+        _mp3 = new AudioGeneratorMP3();
+        _currentGenerator = _mp3;
+        _mp3->begin(_file, _out);
+    } else {
+        Serial.printf("Error: Unsupported file type: %s\n", filename);
+        delete _file; // 不要なファイルソースを閉じる
+        _file = nullptr;
     }
 }
 
-void BeepPlayer::loop() {
-    if (_generator && _generator->isRunning()) {
-        if (!_generator->loop()) {
-            // 再生が完了したら全てのリソースを解放
-            cleanup();
-            Serial.println("Playback finished.");
-        }
+void BeepPlayer::stop() {
+    if (_currentGenerator && _currentGenerator->isRunning()) {
+        _currentGenerator->stop();
     }
+    // メモリを解放
+    if (_wav) { delete _wav; _wav = nullptr; }
+    if (_mp3) { delete _mp3; _mp3 = nullptr; }
+    if (_file) { delete _file; _file = nullptr; }
+    _currentGenerator = nullptr;
 }
 
 bool BeepPlayer::isPlaying() {
-    // _generatorが有効で、かつ再生中かを確認
-    return (_generator && _generator->isRunning());
+    if (_currentGenerator) {
+        return _currentGenerator->isRunning();
+    }
+    return false;
+}
+
+void BeepPlayer::loop() {
+    if (_currentGenerator && _currentGenerator->isRunning()) {
+        if (!_currentGenerator->loop()) {
+            // 再生が終了したら停止処理を呼ぶ
+            stop();
+            Serial.println("Playback finished.");
+        }
+    }
 }
