@@ -3,27 +3,29 @@
 #include <SPIFFS.h>
 #include <AudioFileSourceSPIFFS.h>
 #include <AudioGeneratorWAV.h>
-#include <AudioOutputI2S.h> // I2S出力用のヘッダーをインクルード
-// クラスヘッダーをインクルード
+#include <AudioOutputI2S.h>
+
 #include "BeepPlayer.h"
 #include "RemoteControlHandler.h"
 
-#define BCLK_PIN 12
-#define LRCK_PIN 0
-#define SADTA_PIN 2
-#define EXTERNAL_I2S 0
+const uint16_t kRecvPin = 36;  // M5GOのIRピン
 
-// IRセンサーの入力ピン
-const uint16_t kRecvPin = 33;  // M5StickC Plus2
-// const uint16_t kRecvPin = 36;  // M5GO
-
-// グローバルオブジェクト
-AudioOutputI2S* audioOutput = nullptr; 
+AudioOutputI2S* audioOutput = nullptr;
 BeepPlayer* beepPlayer = nullptr;
 RemoteControlHandler* remoteHandler = nullptr;
 
 void setup() {
-    M5.begin();
+    auto cfg = M5.config();
+
+    // ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
+    // ★ これが真の最終解決策です。
+    // ★ RMTの競合元であるLEDバー（Neopixel）機能を、ピン設定を-1にすることで完全に無効化します。
+    // ★ これによりRMTチャンネル0が解放され、IRライブラリが自由に使用できるようになります。
+    cfg.pin_neopixel = -1;
+    // ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
+
+    M5.begin(cfg);
+
     M5.Lcd.setRotation(1);
     M5.Lcd.setTextSize(2);
     M5.Lcd.fillScreen(BLACK);
@@ -37,30 +39,17 @@ void setup() {
     }
     Serial.println("SPIFFS Mount Successful");
 
-    audioOutput = new AudioOutputI2S(I2S_NUM_0, EXTERNAL_I2S);
-    if (!audioOutput) {
-         Serial.println("Failed to allocate AudioOutputI2S!");
-         M5.Lcd.println("Audio Init Failed!");
-         while(1);
-    }
+    M5.Speaker.begin();
+    M5.Speaker.end();
 
-    audioOutput->SetPinout(BCLK_PIN, LRCK_PIN, SADTA_PIN);
-    audioOutput->SetGain(0.4); // 必要に応じてゲインを調整
+    auto spk_cfg = M5.Speaker.config();
+    audioOutput = new AudioOutputI2S(spk_cfg.i2s_port, AudioOutputI2S::EXTERNAL_I2S);
+    audioOutput->SetPinout(spk_cfg.pin_bck, spk_cfg.pin_ws, spk_cfg.pin_data_out);
+    audioOutput->SetGain(0.4);
     audioOutput->SetOutputModeMono(true);
 
     beepPlayer = new BeepPlayer(audioOutput);
-    if (!beepPlayer) {
-         Serial.println("Failed to allocate BeepPlayer!");
-         M5.Lcd.println("BeepPlayer Init Failed!");
-         while(1);
-    }
-
     remoteHandler = new RemoteControlHandler(kRecvPin, beepPlayer);
-    if (!remoteHandler) {
-         Serial.println("Failed to allocate RemoteControlHandler!");
-         M5.Lcd.println("RemoteHandler Init Failed!");
-         while(1);
-    }
 
     Serial.println("Setup complete. Ready to receive IR signals.");
 }
