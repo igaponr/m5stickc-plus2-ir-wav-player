@@ -1,12 +1,14 @@
 # m5stickc-plus2-ir-wav-player
 
-家庭にあるような赤外線リモコンを使ってM5StickC Plus2を制御し、WAV形式の音声ファイルを再生するプロジェクトです。
+家庭にあるような赤外線リモコンを使って、マイコンからWAV形式の音声ファイルを再生します。
+* M5StickC Plus2：聞き取れる音声になりませんでした、ノイズが再生されました
+* M5GO：聞き取れる音声になりました（理由不明ですが、書き込みの状態によって、再生できない時もありました）
 
 ## 概要
 
 - **目的**: 赤外線リモコンを活用したマイコン制御の基礎を学ぶ。
 - **背景**: 社内イベントでの制作品。
-- **機能**: リモコンのボタン信号に応じて、M5StickC Plus2に保存された異なる音声ファイルを再生します。
+- **機能**: リモコンのボタン信号に応じて、マイコンに保存された異なる音声ファイルを再生します。
 
 ## 動作イメージ
 
@@ -24,9 +26,10 @@ IR（赤外線）センサーに向かってリモコンのボタンを押すと
 ## 必要なもの
 
 ### ハードウェア
-- **マイコン**: [M5StickC Plus2](https://docs.m5stack.com/ja/core/M5StickC%20PLUS2)
+- **マイコン**: [M5StickC Plus2](https://docs.m5stack.com/ja/core/M5StickC%20PLUS2) または [M5GO](https://docs.m5stack.com/ja/core/m5go_v2.7)
 - **IRセンサー**: M5GOキットなどに付属のIRユニット
-  - M5StickC Plus2のGroveポート (G33) に接続します。
+  - M5StickC Plus2の場合は、Groveポート (G33) に接続します
+  - M5GOの場合は、Groveポート (G36) に接続します
 - **リモコン**: タカラスタンダード製レンジフード用リモコン (または任意のIRリモコン)
 
 ### ソフトウェア
@@ -44,14 +47,16 @@ IR（赤外線）センサーに向かってリモコンのボタンを押すと
 ## セットアップ手順
 
 ### 1. ハードウェアの接続
-M5StickC Plus2のGroveポート（G33）にIRセンサーを接続します。
+- IRセンサー接続先
+   - M5StickC Plus2の場合は、Groveポート（G33）にIRセンサーを接続します
+   - M5GOの場合は、Groveポート（G36）にIRセンサーを接続します
 
 ### 2. 音声ファイルの準備
-M5StickC Plus2で再生するためのWAVファイルを作成します。
+マイコンで再生するためのWAVファイルを作成します。
 
 1.  **音声合成**: [VOICEVOX](https://voicevox.hiroshiba.jp/) を使って、各ボタンに対応するセリフの音声ファイルを作成します。
     ![音声作成](./image/音声作成.png)
-2.  **フォーマット変換**: [Audacity](https://forest.watch.impress.co.jp/library/software/audacity/) を使って、WAVファイルをM5StickC Plus2での再生に適した形式に変換します。
+2.  **フォーマット変換**: [Audacity](https://forest.watch.impress.co.jp/library/software/audacity/) を使って、WAVファイルをマイコンでの再生に適した形式に変換します。
     - **再サンプリング**: メニューの `トラック` > `再サンプリング` で `8000` Hz を選択します。
     - **エクスポート**: メニューの `ファイル` > `オーディオをエクスポート` で以下の形式で保存します。
       - **フォーマット**: WAV (Microsoft)
