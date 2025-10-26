@@ -96,9 +96,10 @@ Arduino IDEのセットアップとライブラリのインストールを行い
     - `ツール` > `ボード` > `ボードマネージャ` を開き、「M5Stack」で検索して**バージョン2.1.0**をインストールします。
 3.  **ライブラリのインストール**:
     - `ツール` > `ライブラリを管理` から、以下のライブラリを検索してインストールします。
-      - `M5StickCPlus2`
       - `IRremoteESP8266` (ver 2.8.6)
-      - `ESP8266Audio`
+      - `ESP8266Audio` (ver 2.0.0)
+      - `M5GFX` (ver 0.2.9)
+      - `M5Unified` (ver 0.2.7)
 4.  **SPIFFSアップロードツールの導入**:
     - [arduino-esp32fs-pluginのReleasesページ](https://github.com/me-no-dev/arduino-esp32fs-plugin/releases/)から最新版のZIPファイルをダウンロードします。
     - IDEのスケッチブックの場所（例: `C:\Arduino-1.8.19\portable\sketchbook`）に `tools` フォルダを新規作成します。
@@ -111,16 +112,18 @@ Arduino IDEのセットアップとライブラリのインストールを行い
 
 ### 4. 音声データのアップロード
 1.  **Arduino IDE 1.8.19** を起動します。
-2.  `ツール` > `Board` で「M5STICK-C-Plus2」を選択します。
+2.  `ツール` > `Board` で、それぞれ使用するマイコンに合わせて以下を選択します。
+   - M5StickC Plus2：「M5StickC Plus2」
+   - M5GO：「M5Core」
 3.  `ツール` メニューから `ESP32 Sketch Data Upload` を選択します。
 4.  ダイアログが表示されたら `SPIFFS` を選び、OKをクリックしてアップロードを開始します。
 
 ### 5. スケッチの書き込み
 1.  **Arduino IDE 2.x** を起動します。
-2.  `m5stickc-plus2-ir-wav-player.ino` を開き、M5StickC Plus2に書き込みます。
+2.  `m5stickc-plus2-ir-wav-player.ino` を開き、マイコンに書き込みます。
 
 ## 使い方
-1.  セットアップが完了したM5StickC Plus2を起動（リセット）します。
+1.  セットアップが完了したマイコンを起動（リセット）します。
 2.  IRセンサーに向かってリモコンのボタンを押すと、対応する動作が実行されます。
 
 ## 参考
